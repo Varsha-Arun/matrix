@@ -1,0 +1,95 @@
+resources:
+  - name: repo_pipe_var
+    type: GitRepo
+    configuration:
+      gitProvider: varsha_github
+      path: Varsha-Arun/pipelines   
+      branches:
+        include: matrixSteps
+
+pipelines:
+
+  - name: pipeline_matrix
+    steps:
+
+      # FanOut step is optional
+      - name: matrix_fanout_var    
+        type: FanOut
+        configuration: 
+          inputResources:
+            - name: repo_pipe_var
+        execution:                   
+          onStart:   
+            - echo "from onStart"  # optional                                          
+          onExecute:                  # required     
+            - echo "this is a fanout step"           
+          onSuccess: 
+            - echo "from onSuccess" # optional    
+          onFailure:       
+            - echo "from onFailure" # optional 
+          onComplete:               
+            - echo "from onComplete" # optional
+
+      - name: matrix_var
+        type: Matrix
+        stepMode: Bash 
+        configuration: 
+          inputSteps:
+            - name: matrix_fanout_var
+        execution:                   
+          onStart: 
+            - echo "hello from onStart"     # optional                                          
+          onExecute:                  # required     
+            - echo "hello from onExecute"  
+            - set_step_var test_key "$(date)"
+          onSuccess:  
+            - echo "hello  from onSuccess"     # optional    
+          onFailure:
+            - echo "hello from OnFailure"     # optional 
+          onComplete: 
+            - echo "hello from Oncomplete"     # optional
+
+        matrix:                       
+          environmentVariables:       # optional, only needed if customer
+            - moo: bar                # wants to execute step against
+              woof: car               # multiple values of env
+            - moo: cow                
+              woof: dog
+
+          runtimes:                   # optional, only needed if customer
+            - image:                  # wants to execute step against 
+                auto:                 # multiple images
+                  language: java
+                  version: 
+                    - 11
+#                 custom:
+#                   <same config as Bash>
+            - image:               
+                auto:
+                  language: node
+                  version: 
+                    - 10.18.0
+            - image: 
+                custom:
+                  name: shippabledocker/jfreq
+                  tag: latest
+                  registry: varsha_docker
+      # FanIn step is optional
+      - name: matrix_fanin_var  
+        type: FanIn
+        configuration: 
+          inputSteps:
+            - name: matrix_var
+#           <inherits Bash config> 
+        execution:                   
+          onStart:    
+            - echo "from onStart"      # optional                                          
+          onExecute:                  # required     
+            - echo "this is a fanin step" 
+            - get_step_var matrix_var test_key
+          onSuccess: 
+            - echo "from onSuccess" # optional    
+          onFailure:       
+            - echo "from onFailure" # optional 
+          onComplete:               
+            - echo "from onComplete" # optional
