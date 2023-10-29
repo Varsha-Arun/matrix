@@ -7,3 +7,12 @@ pipelines:
         execution:
           onExecute:
             - printenv
+            
+      - name: testsimplee2
+        type: Bash
+        configuration:
+          inputSteps:
+            - name: testsimplee
+        execution:
+          onExecute:
+            - printenv
