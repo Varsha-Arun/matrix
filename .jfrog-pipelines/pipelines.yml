@@ -16,3 +16,12 @@ pipelines:
         execution:
           onExecute:
             - printenv
+
+      - name: testsimplee3
+        type: Bash
+        configuration:
+          inputSteps:
+            - name: testsimplee2
+        execution:
+          onExecute:
+            - printenv
