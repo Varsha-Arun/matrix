@@ -17,7 +17,7 @@ pipelines:
           onExecute:
             - printenv
 
-      - name: testsimplee3
+      - name: testsimplee4
         type: Bash
         configuration:
           inputSteps:
