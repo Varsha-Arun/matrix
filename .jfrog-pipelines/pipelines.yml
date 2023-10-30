@@ -4,18 +4,17 @@ pipelines:
     steps:
 
 
-    - name: jfrog_bash_step1
-      type: Jenkins
-      configuration:
-        jenkinsJobName: testvarsha
-        integrations:
-          - name: S_B_Jenkins
+    - name: jfrog_bash_step
+      type: Bash
+      execution:
+        onStart:
+          - echo "Step is running"
           
     - name: jfrog_jenkins_step1
       type: Jenkins
       configuration:
         inputSteps:
-          - name: jfrog_bash_step1
+          - name: jfrog_bash_step
         jenkinsJobName: testvarsha
         integrations:
           - name: S_B_Jenkins
@@ -24,7 +23,7 @@ pipelines:
       type: Jenkins
       configuration:
         inputSteps:
-          - name: jfrog_bash_step1
-        jenkinsJobName: testvarsha
+          - name: jfrog_bash_step
+        jenkinsJobName: failPipeline
         integrations:
           - name: S_B_Jenkins
