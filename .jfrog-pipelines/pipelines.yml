@@ -7,3 +7,37 @@ pipelines:
         execution:
           onExecute:
             - printenv
+  - name: chronology_at_stepLevel #make sure you have more than 1 node
+    steps:
+      - name: chronological_stepLevel_step1
+        type: Bash
+        configuration:
+          environmentVariables:
+            BRANCH_NAME: main
+            step: one
+          chronological: true
+          inputResources:
+            - name: res_for_2_parallel_steps
+        execution:
+          onStart:
+            - echo $BRANCH_NAME
+          onExecute:
+            - printenv
+            - sleep 1m
+            
+      - name: chronological_stepLevel_step2
+        type: Bash
+        configuration:
+          environmentVariables:
+            BRANCH_NAME: main
+            test: env
+            step: two
+          chronological: true
+          inputResources:
+            - name: res_for_2_parallel_steps
+        execution:
+          onStart:
+            - echo $BRANCH_NAME
+          onExecute:
+            - printenv
+            - sleep 5m
