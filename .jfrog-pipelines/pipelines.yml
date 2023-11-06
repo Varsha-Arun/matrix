@@ -1,3 +1,10 @@
+resources:
+  - name: res_for_2_parallel_steps
+    type: PropertyBag
+    configuration:
+      commitSha: 1
+      runID: 1
+
 pipelines:
   - name: testsimpleepipe
     
