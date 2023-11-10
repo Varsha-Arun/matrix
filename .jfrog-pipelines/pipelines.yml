@@ -1,7 +1,7 @@
 
 pipelines:
 
- - name: matrixWith5steplets
+  - name: matrixWith5steplets
     steps:
 
       - name: steplets5
