@@ -1,29 +1,47 @@
 
 pipelines:
-  - name: jenkins_varsha
+
+  - name: matrixWith5stepletsMultiNode
     steps:
 
+      - name: bashStepBeforeMatrix
+        type: Bash
+        configuration:
+          environmentVariables:
+            key1: "value1"
+            key2: "value2"
+            key3: "value3"
+            JFROG_PIPELINES_RUN_STATE_DEBUG: "true"
+        execution:
+          onExecute:
+            - mkdir -p testResults
+            - "echo '<?xml version=\"1.0\" encoding=\"UTF-8\"?><testsuite name=\"myTestSuite\" tests=\"5\" errors=\"2\" failures=\"1\" skip=\"1\"><testcase classname=\"test.One\" name=\"test\" time=\"1\"></testcase><testcase classname=\"test.Two\" name=\"test\" time=\"2\"><error message=\"test.Error\" type=\"ErrorType\">myError</error></testcase><testcase classname=\"test.Three\" name=\"test\" time=\"0\"><skipped/></testcase><testcase classname=\"test.Four\" name=\"test\" time=\"3\"><failure type=\"exceptions.AssertionError\" message=\"True is not false\">My failure message</failure></testcase><testcase classname=\"test.Five\" name=\"test\" time=\"1\"><error message=\"test.Error\" type=\"ErrorType\">mySecondError</error></testcase></testsuite>' > testResults/total.xml"
+            - save_tests testResults
 
-    - name: jfrog_bash_step
-      type: Bash
-      execution:
-        onStart:
-          - echo "Step is running"
-          
-    - name: jfrog_jenkins_step1
-      type: Jenkins
-      configuration:
-        inputSteps:
-          - name: jfrog_bash_step
-        jenkinsJobName: testvarsha
-        integrations:
-          - name: S_B_Jenkins
-
-    - name: jfrog_jenkins_step2
-      type: Jenkins
-      configuration:
-        inputSteps:
-          - name: jfrog_bash_step
-        jenkinsJobName: failPipeline
-        integrations:
-          - name: S_B_Jenkins
+      - name: steplets18multiNode
+        type: Matrix
+        configuration:
+          multiNode: true
+          inputSteps:
+            - name: bashStepBeforeMatrix
+        stepletMultipliers:
+          environmentVariables:
+            - a: key1
+            - b: key2
+            - c: key3
+            - d: key4
+            - e: key5
+        execution:
+          onExecute:
+            - printenv
+            - printenv
+            - printenv
+            - printenv
+            - printenv
+            - printenv
+            - printenv
+            - mkdir -p matrixFiles/${steplet_id}
+            - echo "working" >> matrixFiles/${steplet_id}/working.txt
+            - echo ${steplet_id}
+            - echo ${step_node_name}
+            - sleep 2m
