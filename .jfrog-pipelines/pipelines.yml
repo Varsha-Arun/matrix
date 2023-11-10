@@ -1,6 +1,35 @@
 
 pipelines:
 
+ - name: matrixWith5steplets
+    steps:
+
+      - name: steplets5
+        type: Matrix
+        configuration:
+          nodePool: runAdj
+        stepletMultipliers:
+          environmentVariables:
+            - a: key1
+            - b: key2
+            - c: key3
+            - d: key4
+            - e: key5
+        execution:
+          onExecute:
+            - printenv
+            - printenv
+            - printenv
+            - printenv
+            - printenv
+            - printenv
+            - printenv
+            - mkdir -p matrixFiles/${steplet_id}
+            - echo "working" >> matrixFiles/${steplet_id}/working.txt
+            - echo ${steplet_id}
+            - echo ${step_node_name}
+
+
   - name: matrixWith5stepletsMultiNode
     steps:
 
