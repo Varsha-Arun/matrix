@@ -1,29 +1,69 @@
-
+resources:
+  - name: gitRepoSimple
+    type: GitRepo
+    configuration:
+      gitProvider: varsha_github
+      path: Varsha-Arun/simple
+      
 pipelines:
-  - name: jenkins_varsha
+  - name: ApprovalGatesPipeline
+    configuration:
+      environmentVariables:
+        readOnly:
+          MY_MESSAGE: '"Hello World!"'
     steps:
+      - name: step1ap1
+        type: Bash
+        configuration:
+          inputResources:
+            - name: gitRepoSimple
+          requiresApproval:
+            approvers:
+              - member
+        execution:
+          onExecute:
+            - echo $MY_MESSAGE
+            - echo "Running $pipeline_name | $step_name on node ID $step_node_id"      
+      - name: step2ap2
+        type: Bash
+        configuration:
+          inputResources:
+            - name: gitRepoSimple
+          requiresApproval:
+            approvers:
+              - member
+        execution:
+          onExecute:
+            - echo $MY_MESSAGE
+            - echo "Running $pipeline_name | $step_name on node ID $step_node_id"
 
-
-    - name: jfrog_bash_step
-      type: Bash
-      execution:
-        onStart:
-          - echo "Step is running"
-          
-    - name: jfrog_jenkins_step1
-      type: Jenkins
-      configuration:
-        inputSteps:
-          - name: jfrog_bash_step
-        jenkinsJobName: testvarsha
-        integrations:
-          - name: S_B_Jenkins
-
-    - name: jfrog_jenkins_step2
-      type: Jenkins
-      configuration:
-        inputSteps:
-          - name: jfrog_bash_step
-        jenkinsJobName: failPipeline
-        integrations:
-          - name: S_B_Jenkins
+  - name: ApprovalGatesPipeline2
+    configuration:
+      environmentVariables:
+        readOnly:
+          MY_MESSAGE: '"Hello World!"'
+    steps:
+      - name: step3ap1
+        type: Bash
+        configuration:
+          requiresApproval:
+            approvers:
+              - member
+              - admin
+        execution:
+          onExecute:
+            - echo $MY_MESSAGE
+            - echo "Running $pipeline_name | $step_name on node ID $step_node_id"      
+      - name: step4ap2
+        type: Bash
+        configuration:
+          inputSteps:
+            - name: step3ap1
+          requiresApproval:
+            approvers:
+              - member
+              - admin
+        execution:
+          onExecute:
+            - echo $MY_MESSAGE
+            - echo "Running $pipeline_name | $step_name on node ID $step_node_id"
